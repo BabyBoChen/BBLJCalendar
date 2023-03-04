@@ -1,35 +1,34 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>BBLJ行事曆📅</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <style>
-            .page-title{
-                width: 100%;
-                text-align: center;
-            }
-            .dial-wrapper{
-                text-align: center;
-                margin-bottom: 0.5rem;
-            }
-            select{
-                font-size: larger;
-            }
-            .calendar-wrapper{
-                text-align: center;
-            }
-        </style>
-    </head>
-    <body>
-        <h1 class="page-title">BBLJ行事曆📅</h1>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta http-equiv="Cache-control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+
+    <title>BBLJ行事曆📅</title>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+    <link rel="manifest" href="assets/site.webmanifest">
+    <link rel="shortcut icon" href="assets/favicon.ico">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-config" content="assets/browserconfig.xml">
+    <meta name="theme-color" content="#ffffff">
+
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <div class="page-title">
+        BBLJ行事曆📅
         <div class="dial-wrapper">
             <label for="selYearDial">
                 <select id="selYearDial" name="Year" onchange="dial()">
                     <option id="opt1" value="1">1</option>
                     <option id="opt2" value="2">2</option>
-                    <option id="opt3" value="3" selected="true">3</option>
+                    <option id="opt3" value="3">3</option>
                     <option id="opt4" value="4">4</option>
                     <option id="opt5" value="5">5</option>
                 </select>
@@ -53,97 +52,11 @@
                 月
             </label>
         </div>
-        <script>
-            let now = new Date()
-            let utcNow = new Date(now.getFullYear(), now.getUTCMonth(), now.getUTCDate(), 0,0,0);
-            document.querySelector("#opt3").value = utcNow.getFullYear();
-            document.querySelector("#opt3").innerHTML = utcNow.getFullYear();
-            document.querySelector("#opt2").value = utcNow.getFullYear()-1;
-            document.querySelector("#opt2").innerHTML = utcNow.getFullYear()-1;
-            document.querySelector("#opt1").value = utcNow.getFullYear()-2;
-            document.querySelector("#opt1").innerHTML = utcNow.getFullYear()-2;
-            document.querySelector("#opt4").value = utcNow.getFullYear()+1;
-            document.querySelector("#opt4").innerHTML = utcNow.getFullYear()+1;
-            document.querySelector("#opt5").value = utcNow.getFullYear()+2;
-            document.querySelector("#opt5").innerHTML = utcNow.getFullYear()+2;
-            let optMonths = document.querySelectorAll("#selMonthDial option");
-            optMonths.forEach(/** @param {HTMLOptionElement} opt*/ function(opt){
-                if(utcNow.getMonth()+1 == opt.value){
-                    opt.selected = true;
-                }
-            });
-        </script>
-        <div class="calendar-wrapper">
-            <canvas id="calendar"></canvas>
-        </div>
-        <script src="./calendar.js"></script>
-        <script>
-            let calendar = null;
-            window.addEventListener('DOMContentLoaded',async function() {
-                let w = window.innerWidth*0.8;
-                let h = window.innerHeight*0.8;
-                let size = 0;
-                if(w > h){
-                    size = h;
-                } else {
-                    size = w;
-                }
-                calendar = BBLJCalendar.init("calendar",size, size);
-                calendar.fontSize = convertRemToPixels(1.25);
-                calendar.calendarDayInfos = await fetchCalendars(now.getFullYear(), now.getUTCMonth()+1);
-                calendar.onCalendarClick = function(day){
-                    /** @type {Date} */
-                    let clickedDate = day;
-                    calendar.calendarDayInfos.forEach(function(dayInfo){
-                        if(dayInfo.date.getFullYear() == clickedDate.getFullYear() && 
-                        dayInfo.date.getMonth() == clickedDate.getMonth() && 
-                        dayInfo.date.getDate() == clickedDate.getDate()){
-                            alert(`${dayInfo.date.getMonth()+1}/${dayInfo.date.getDate()} ${dayInfo.description}`);
-                        }
-                    });
-                };
-            });
-            
-            async function fetchCalendars(y, m){
-                let calendarDays = await fetch(`https://bbljtodo.azurewebsites.net/apiCalendar?y=${y}&m=${m}`, {
-                    method : 'GET',
-                }).then(function(prop){
-                    return prop.json();
-                }).then(function(days){
-                    let calendarDayInfos = [];
-                    days.forEach(function(day){
-                        let d = new Date(day.Year, day.Month-1, day.Date, 0,0,0);
-                        let cd = new CalendarDay(d, day.IsHoliday, day.Description);
-                        calendarDayInfos.push(cd);
-                    });
-                    return calendarDayInfos;
-                });
-                return calendarDays;
-            }
-            function convertRemToPixels(rem) {    
-                return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
-            }
-            async function dial(){
-                let y = parseInt(document.querySelector("#selYearDial").value);
-                let m = parseInt(document.querySelector("#selMonthDial").value);
-                calendar.setYearAndMonth(y,m-1);
-                calendar.calendarDayInfos = await fetchCalendars(y, m);
-            }
-
-            window.addEventListener('resize',function(){
-                w = window.innerWidth*0.8;
-                h = window.innerHeight*0.8;
-                let newDimension = new Dimension(0,0);
-                if(w > h){
-                    newDimension.w = h;
-                    newDimension.h = h;
-                } else {
-                    newDimension.w = w;
-                    newDimension.h = w;
-                }
-                calendar.size = newDimension;
-            });
-            
-        </script>
-    </body>
+    </div>
+    <div class="calendar-wrapper">
+        <canvas id="calendar"></canvas>
+    </div>
+    <script src="bbljCalendar.min.js"></script>
+    <script src="assets/js/script.js"></script>
+</body>
 </html>
