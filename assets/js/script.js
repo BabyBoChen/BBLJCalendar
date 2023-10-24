@@ -1,3 +1,4 @@
+/// <reference path="../../bbljCalendar-1.0.2.js"/>
 /** @type {BBLJCalendar} */
 let calendar = null;
 const apiEndPoint = "https://bbljcalendarapi.onrender.com/api";
