@@ -3,9 +3,13 @@
 }
 
 body {
+    position: relative;
     width: 100%;
     height: 100vh;
     height: 100svh;
+    min-width: 400px;
+    min-height: 400px;
+    overflow: auto;
 }
 
 .page-title {
