@@ -1,0 +1,12 @@
+{
+  "name": "bblj-calendar",
+  "version": "1.0.2",
+  "private": true,
+  "scripts": {
+    "build": "terser bbljCalendar-1.0.2.js --compress --mangle --output bbljCalendar-1.0.2.min.js",
+    "test": "node --test tests/*.test.cjs"
+  },
+  "devDependencies": {
+    "terser": "^5.44.0"
+  }
+}

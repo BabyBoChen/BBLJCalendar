@@ -19,9 +19,10 @@ async function onLoaded() {
         config.dateInfos = null;
     }
     config.onDateClicked = function (dateInfo) {
-        if (dateInfo) {
-            alert(dateInfo.description);
-        }
+        if (!dateInfo) return;
+        const date = dateInfo.date;
+        const dateLabel = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
+        alert(dateInfo.description || `${dateLabel}\n此日期沒有備註。`);
     }
     calendar = BBLJCalendar.mount(canvas, config);
     
